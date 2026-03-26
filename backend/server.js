@@ -1,10 +1,24 @@
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
-const db = require("./db"); // Import the database connection
+const sql = require("./db"); // Import postgres connection
 
 const app = express();
 const PORT = 3000;
+
+const { Pool } = require('pg');
+require('dotenv').config();
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false } // Supabase 需要 SSL
+});
+
+// 测试连接
+pool.query('SELECT NOW()', (err, res) => {
+  if (err) console.error('连接失败:', err);
+  else console.log('数据库连接成功:', res.rows[0]);
+});
 
 // Middleware
 app.use(cors());
@@ -20,8 +34,8 @@ app.get("/", (req, res) => {
 // GET all notes from the database
 app.get("/notes", async (req, res) => {
   try {
-    const [rows] = await db.query("SELECT * FROM notes ORDER BY created_at ASC");
-    res.json(rows);
+    const notes = await sql`SELECT * FROM notes ORDER BY created_at ASC`;
+    res.json(notes);
   } catch (error) {
     console.error("Error fetching notes:", error);
     res.status(500).json({ error: "Failed to fetch notes" });
@@ -37,11 +51,12 @@ app.post("/notes", async (req, res) => {
   }
 
   try {
-    const [result] = await db.query("INSERT INTO notes (content) VALUES (?)", [content.trim()]);
-
-    // Return the newly created note
-    const newNote = { id: result.insertId, content: content.trim() };
-    res.status(201).json(newNote);
+    const result = await sql`
+      INSERT INTO notes (content)
+      VALUES (${content.trim()})
+      RETURNING *
+    `;
+    res.status(201).json(result[0]);
   } catch (error) {
     console.error("Error adding note:", error);
     res.status(500).json({ error: "Failed to add note" });
@@ -53,9 +68,13 @@ app.delete("/notes/:id", async (req, res) => {
   const id = parseInt(req.params.id);
 
   try {
-    const [result] = await db.query("DELETE FROM notes WHERE id = ?", [id]);
+    const result = await sql`
+      DELETE FROM notes
+      WHERE id = ${id}
+      RETURNING *
+    `;
 
-    if (result.affectedRows === 0) {
+    if (result.length === 0) {
       return res.status(404).json({ error: "Note not found" });
     }
 

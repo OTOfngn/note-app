@@ -9,6 +9,14 @@ async function getNotes() {
   try {
     const response = await fetch(`${API_URL}/notes`);
     const notes = await response.json();
+
+    // Check if the backend sent an error object instead of an array!
+    if (!Array.isArray(notes)) {
+      console.error("Expected an array but got an error from server:", notes);
+      notesList.innerHTML = "<p style='color:red;'>Could not connect to the database. Check your backend terminal for errors!</p>";
+      return;
+    }
+
     renderNotes(notes);
   } catch (error) {
     console.error("Error fetching notes:", error);
