@@ -1,4 +1,6 @@
 const express = require("express");
+const dns = require("node:dns");
+dns.setDefaultResultOrder("ipv4first"); // Forces IPv4 and resolves the ENETUNREACH error on Render
 const cors = require("cors");
 const path = require("path");
 const sql = require("./db"); // Import postgres connection
