@@ -6,19 +6,18 @@ const sql = require("./db"); // Import postgres connection
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const { Pool } = require('pg');
 require('dotenv').config();
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false }
-});
-
-// Test connection
-pool.query('SELECT NOW()', (err, res) => {
-  if (err) console.error('Error:', err);
-  else console.log('Database connected:', res.rows[0]);
-});
+// Test connection using the unified sql tool
+async function testDB() {
+  try {
+    const result = await sql`SELECT NOW()`;
+    console.log('Database connected:', result[0]);
+  } catch (err) {
+    console.error('Database connection error:', err);
+  }
+}
+testDB();
 
 // Middleware
 app.use(cors());
@@ -28,7 +27,7 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "../frontend")));
 
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "../frontend/main.html"));
+  res.sendFile(path.join(__dirname, "../frontend/index.html"));
 });
 
 // GET all notes from the database
