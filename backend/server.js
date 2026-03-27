@@ -11,13 +11,13 @@ require('dotenv').config();
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false } // Supabase 需要 SSL
+  ssl: { rejectUnauthorized: false }
 });
 
-// 测试连接
+// Test connection
 pool.query('SELECT NOW()', (err, res) => {
-  if (err) console.error('连接失败:', err);
-  else console.log('数据库连接成功:', res.rows[0]);
+  if (err) console.error('Error:', err);
+  else console.log('Database connected:', res.rows[0]);
 });
 
 // Middleware
