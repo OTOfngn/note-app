@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:3000";
+const API_URL = ""; // Use relative path so it works both locally and on Render
 
 const noteInput = document.getElementById("note-input");
 const addBtn = document.getElementById("add-btn");
