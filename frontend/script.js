@@ -1,4 +1,4 @@
-const API_URL = ""; // Use relative path so it works both locally and on Render
+const API_URL = "https://note-app-wy8g.onrender.com";
 
 const noteInput = document.getElementById("note-input");
 const addBtn = document.getElementById("add-btn");
