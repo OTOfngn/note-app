@@ -4,7 +4,7 @@ const path = require("path");
 const sql = require("./db"); // Import postgres connection
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 const { Pool } = require('pg');
 require('dotenv').config();
