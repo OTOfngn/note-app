@@ -37,7 +37,7 @@ app.get("/notes", async (req, res) => {
     res.json(notes);
   } catch (error) {
     console.error("Error fetching notes:", error);
-    res.status(500).json({ error: "Failed to fetch notes" });
+    res.status(500).json({ error: "Failed to fetch notes", details: error.message });
   }
 });
 
